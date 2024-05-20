@@ -1,0 +1,57 @@
+	
+		
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
+	    dataset.addValue(2, "1", "Q1");
+	    dataset.addValue(5, "2", "Q1"); 
+	    dataset.addValue(7, "3", "Q1"); 
+	    dataset.addValue(9, "4", "Q1"); 
+	    dataset.addValue(10, "5", "Q1"); 
+	    dataset.addValue(11, "6", "Q1"); 
+	    dataset.addValue(12, "7", "Q1"); 
+	    dataset.addValue(8, "8", "Q1"); 
+	    dataset.addValue(5, "9", "Q1"); 
+	    dataset.addValue(3, "10", "Q2"); 
+	    dataset.addValue(2, "1", "Q2");
+	    dataset.addValue(5, "2", "Q2"); 
+	    dataset.addValue(7, "3", "Q2"); 
+	    dataset.addValue(9, "4", "Q2"); 
+	    dataset.addValue(10, "5", "Q2"); 
+	    dataset.addValue(11, "6", "Q2"); 
+	    dataset.addValue(12, "7", "Q2"); 
+	    dataset.addValue(8, "8", "Q2"); 
+	    dataset.addValue(5, "9", "Q2"); 
+	    dataset.addValue(3, "10", "Q2"); 
+
+
+	    JFreeChart barChart = ChartFactory.createStackedBarChart(
+	    		"Répartition des Notes",
+	    		"",
+	    		 "Note",
+	    		 dataset,
+	    		 PlotOrientation.VERTICAL,
+	    		 true,
+	    		 true,
+	    		 false
+	    		 ); 
+	    ChartPanel cPanel = new ChartPanel(barChart); 
+	    
+	    GroupedStackedBarRenderer renderer = new GroupedStackedBarRenderer();
+
+	    
+	    renderer.setSeriesPaint(0, Color.red);
+	        renderer.setSeriesPaint(1, Color.orange);
+	        renderer.setSeriesPaint(2, Color.YELLOW);
+	        renderer.setSeriesPaint(3, Color.GRAY);
+	        renderer.setSeriesPaint(4, Color.LIGHT_GRAY);
+	        renderer.setSeriesPaint(5, Color.DARK_GRAY);
+	        renderer.setSeriesPaint(6, Color.blue);
+	        renderer.setSeriesPaint(7, Color.CYAN);
+	        renderer.setSeriesPaint(8, Color.GREEN);
+	        renderer.setSeriesPaint(9, Color.GREEN);
+	        
+	        CategoryPlot plot = (CategoryPlot) barChart.getPlot();
+
+	        //plot.setDomainAxisLocation(AxisLocation.TOP_OR_RIGHT);
+	        plot.setRenderer(renderer);
+	    
+	    centerZone.add(cPanel);
