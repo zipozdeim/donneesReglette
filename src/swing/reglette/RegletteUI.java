@@ -7,14 +7,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.BoxLayout;
@@ -28,13 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
+import javax.swing.tree.TreePath;
 
 import data.reglette.DbConn;
+import data.reglette.questions;
 
 public class RegletteUI extends JFrame {
 
@@ -56,16 +51,16 @@ public class RegletteUI extends JFrame {
 		JFrame frame = new JFrame();
 		frame.addWindowListener(new WindowAdapter()
 		{
-		    @Override
-		    public void windowClosing(WindowEvent e)
-		    {
-		        super.windowClosing(e);
-		        myConn.closeConection();
-		    }
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				super.windowClosing(e);
+				myConn.closeConection();
+			}
 		});
 		//PARAMETRE GENERAUX DU FRAME
-		
-        try {
+
+		try {
 			UIManager.setLookAndFeel( new NimbusLookAndFeel() );
 		} catch (UnsupportedLookAndFeelException e2) {
 			//System.out.println(" pas nimbus");
@@ -75,79 +70,94 @@ public class RegletteUI extends JFrame {
 		this.setSize( 1280, 950 );
 		//setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		setLocationRelativeTo(null);
-		
+
 		//DEFINITION D'UN PANEL PRINCIPAL EN BORDER LAYOUT NORD/OUEST/SUD/CENTER
 		JPanel mainPanel=(JPanel) this.getContentPane();
 		mainPanel.setBackground(Color.LIGHT_GRAY);
 		mainPanel.setLayout(new BorderLayout());
 
-		// ZONE NORD UNE TOOLBAR Boutons de détail
+		// ZONE NORD UNE TOOLBAR Boutons de dï¿½tail
 		mainPanel.add(createNorthToolBar(),BorderLayout.NORTH);
-		
-		
-		
 
-		//ZONE CENTRE : CARD PANEL - Cartes gérées par les obutons des autres zones
+		//ZONE CENTRE : CARD PANEL - Cartes gï¿½rï¿½es par les obutons des autres zones
 		//myPane.add(barDataset(),BorderLayout.CENTER);
-    	cards = new CardLayout();
+		cards = new CardLayout();
 		cardPanel = new JPanel();
+		mainPanel.add(cardPanel, BorderLayout.CENTER);
 		cardPanel.setBackground(Color.LIGHT_GRAY);
 		cardPanel.setLayout(cards);
 		cardPanel.paintImmediately(cardPanel.getVisibleRect());
 		
-			
 		//ZONE OUEST ARBOESCENCE
-				visites =  new DefaultMutableTreeNode("CATS");
-				arbo1=new JTree(visites);
-				arbo1.setBackground(Color.LIGHT_GRAY);
-				arbo1.setForeground(new Color(240,240,240));
-				arbo1.paintImmediately(getBounds());
-				// GESTION DU LISTENER SUR MON P'TIT TREE FANTA DIALLO OUHOUH FANTA DIALLO
-				arbo1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-			            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-			                selectedNode = (DefaultMutableTreeNode)arbo1.getLastSelectedPathComponent();
-			                if (!(selectedNode.isRoot())) {
-			                	System.out.println("not root node");
-			                
-			                if ((selectedNode != null) && (selectedNode.getParent().toString()!="CATS") && (selectedNode.getUserObject().toString()!="CATS") ) {
-			                	JPanel barsVisitePanel = new barPanel(selectedNode.getParent().toString(),selectedNode.getUserObject().toString());
-			                	barsVisitePanel.setBounds(0,0,1000,900);
-			            		mainPanel.add(cardPanel, BorderLayout.CENTER);
-			            		barsVisitePanel.setAlignmentX(CENTER_ALIGNMENT);
-			            		BoxLayout bx_loadCard = new BoxLayout(barsVisitePanel, BoxLayout.Y_AXIS);
-			            		barsVisitePanel.setLayout( bx_loadCard );
-			            		cardPanel.add(barsVisitePanel, "barsCard");
-			            		cards.show(cardPanel,"barsCard");
-			                    System.out.println("Selected Node: " + selectedNode.getUserObject().toString());
-			                    System.out.println("Selected Node parent: " + selectedNode.getParent().toString());
-			                }
-			                }
-			            }
-			        });
-				
-				JPanel west = new JPanel();
-				west.setLayout(new GridLayout());
-				west.setAlignmentX(Component.LEFT_ALIGNMENT);
-				arbo1.setAlignmentX(Component.LEFT_ALIGNMENT);
-				west.add(arbo1);
-				west.setPreferredSize(new Dimension(150,0));
-				west.setBackground(Color.LIGHT_GRAY);
-				mainPanel.add(west,BorderLayout.WEST);
-				
-				
-				
-				//BARRE D'ETAT SUD
-				mainPanel.add(createStatusBar(),BorderLayout.SOUTH);
+		visites =  new DefaultMutableTreeNode("CATS");
+		arbo1=new JTree(visites);
+		DefaultMutableTreeNode firstLeaf = ((DefaultMutableTreeNode)arbo1.getModel().getRoot()).getFirstLeaf();
+		TreePath firstLeafPath=new TreePath(firstLeaf.getPath());
+		arbo1.setSelectionPath(firstLeafPath);
+		arbo1.setBackground(Color.LIGHT_GRAY);
+		arbo1.setForeground(new Color(240,240,240));
+		arbo1.paintImmediately(getBounds());
+		JPanel globalCatsP= new globalCATSPanel();
+		globalCatsP.setBounds(0,0,1000,900);
+		globalCatsP.setAlignmentX(CENTER_ALIGNMENT);
+		BoxLayout globalCATSLayout = new BoxLayout(globalCatsP, BoxLayout.Y_AXIS);
+		globalCatsP.setLayout( globalCATSLayout );
+		cardPanel.add(globalCatsP, "globalCatsP");
+		JPanel noDatas= new JPanel();
+		JLabel noDatasLabel= new JLabel("");
+		noDatasLabel.setFont(new Font("Times New Roman", Font.PLAIN, 32));
+		noDatas.add(noDatasLabel);
+		cards.show(cardPanel,"globalCatsP");
+		cardPanel.add(noDatas, "noDatas");
+		// GESTION DU LISTENER SUR MON P'TIT TREE FREE FANTA DIALLO OUHOUH FANTA DIALLO
+		arbo1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+			public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+				selectedNode = (DefaultMutableTreeNode)arbo1.getLastSelectedPathComponent();
+				if ( (selectedNode.isRoot()) ) {
+					// System.out.println("root node ou Fils du root node");		
+					// mainPanel.add(cardPanel, BorderLayout.CENTER);
+					cards.show(cardPanel,"globalCatsP");
+				} else {
+					if ((selectedNode != null) && (selectedNode.getParent().toString()!="CATS") && (selectedNode.getUserObject().toString()!="CATS") ) {
+						JPanel barsVisitePanel = new barPanel(selectedNode.getParent().toString(),selectedNode.getUserObject().toString());
+						barsVisitePanel.setBounds(0,0,1000,900);
+						mainPanel.add(cardPanel, BorderLayout.CENTER);
+						barsVisitePanel.setAlignmentX(CENTER_ALIGNMENT);
+						BoxLayout bx_loadCard = new BoxLayout(barsVisitePanel, BoxLayout.Y_AXIS);
+						barsVisitePanel.setLayout( bx_loadCard );
+						cardPanel.add(barsVisitePanel, "barsCard");
+						cards.show(cardPanel,"barsCard");
+						//System.out.println("Selected Node: " + selectedNode.getUserObject().toString());
+						//System.out.println("Selected Node parent: " + selectedNode.getParent().toString());
+					}
+					if (selectedNode.getParent().toString()=="CATS") {
+						cards.show(cardPanel,"noDatas");
+					}
+				}
+			}
+		});
+
+		JPanel west = new JPanel();
+		west.setLayout(new GridLayout());
+		west.setAlignmentX(Component.LEFT_ALIGNMENT);
+		arbo1.setAlignmentX(Component.LEFT_ALIGNMENT);
+		west.add(arbo1);
+		west.setPreferredSize(new Dimension(150,0));
+		west.setBackground(Color.LIGHT_GRAY);
+		mainPanel.add(west,BorderLayout.WEST);
+
+		//BARRE D'ETAT SUD
+		mainPanel.add(createStatusBar(),BorderLayout.SOUTH);
 
 	}
-	
-	
-	
-	
+
+
+
+
 	private JToolBar createNorthToolBar() {
 		JToolBar toolBar=new JToolBar();
 		toolBar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		toolBar.setForeground(Color.WHITE);
+		toolBar.setForeground(Color.LIGHT_GRAY);
 		toolBar.setBorderPainted(false);
 		JButton saveExcel=new JButton("Export excel");
 		saveExcel.setForeground(Color.BLUE);
@@ -165,99 +175,50 @@ public class RegletteUI extends JFrame {
 				}
 			}
 		});
-		
-		JButton butnQ1=new JButton("Conditions");
-		butnQ1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q1",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-		JButton butnQ2=new JButton("Motivation");
-		butnQ2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q2",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-
-		});
-		JButton butnQ3=new JButton("Stress");
-		butnQ3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q3",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-		JButton butnQ4=new JButton("Fatigue");
-		butnQ4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q4",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-		JButton butnQ5=new JButton("Pression");
-		butnQ5.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q5",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-		JButton butnQ6=new JButton("Methodes");
-		butnQ6.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q6",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-		JButton butnQ7=new JButton("Equilibre");
-		butnQ7.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String currentSite=selectedNode.getParent().toString();
-				String currentDate=selectedNode.getUserObject().toString();
-				chartPieQ pieCard = new chartPieQ("Q7",currentSite,currentDate);
-				cardPanel.add(pieCard, "pieCard");
-				cards.show(cardPanel,"pieCard");
-			}
-		});
-
-		
 		toolBar.add(saveExcel);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ1);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ2);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ3);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ4);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ5);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ6);
-		toolBar.addSeparator(new Dimension(20,0));
-		toolBar.add(butnQ7);
+		for(int i=1;i<=7;i++) {
+			String item= questions.valueOf("Q"+i).toString();
+			JButton butn=new JButton(item);
+			String question="Q"+i;
+			CATSBarsPanel catsBars = new CATSBarsPanel(question);
+			butn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String currentSite="",currentDate="";
+					if (selectedNode==null ) {
+						//System.out.println("je suis NULL");
+						cardPanel.add(catsBars, "catsBars");
+						cards.show(cardPanel,"catsBars");
+						
+					} else {
+						if (selectedNode.isRoot()) {
+							//System.out.println("je suis CATS");
+							cardPanel.add(catsBars, "catsBars");
+							cards.show(cardPanel,"catsBars");
+						} else {
+							if (selectedNode.getParent().toString()=="CATS") {
+									//System.out.println("site : "+selectedNode.getParent().toString()); 
+									//System.out.println("je suis Site"); //Ouuuuh le mÃ©chant site)
+								cards.show(cardPanel,"noDatas");
+							} else {
+								//System.out.println("je suis visite");
+								currentSite+=selectedNode.getParent().toString();
+								currentDate+=selectedNode.getUserObject().toString();
+								// System.out.println(currentSite + "*" +currentDate);
+								chartPieQ pieCard = new chartPieQ(question,currentSite,currentDate);
+								cardPanel.add(pieCard, "pieCard");
+								cards.show(cardPanel,"pieCard");
+							}
+						}
+					}
+				}
+			});
+			toolBar.addSeparator(new Dimension(20,0));
+			toolBar.add(butn);
+		}
 		return toolBar;
 	}
-	
-	
+
+
 	private JPanel createStatusBar() {
 		JPanel statusBar=new JPanel();
 		statusBar.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -265,10 +226,10 @@ public class RegletteUI extends JFrame {
 		statusBar.add(statusLbl);
 		return statusBar;
 	}
-	
-	
 
-	
+
+
+
 
 
 

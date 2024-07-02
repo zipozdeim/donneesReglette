@@ -14,7 +14,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import data.reglette.DbConn;
 
-public class chartPieQ extends JPanel {
+public class siteGraph extends JPanel {
 	
 	/**
 	 * 
@@ -25,7 +25,7 @@ public class chartPieQ extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-		public chartPieQ(String question, String site, String dateVisite) {
+		public siteGraph(String question, String site, String dateVisite) {
 		
 	this.add( PieDataset(question,site,dateVisite));
 					
@@ -58,6 +58,5 @@ public class chartPieQ extends JPanel {
 		PiePanel.add( chartPanelQ1 );
 		return (PiePanel);
 	}
-	
 	
 }

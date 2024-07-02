@@ -36,7 +36,7 @@ public class DataLoad extends JFrame {
 	
 		try {
 			
-			//random generator : genere des données aleatoirement pour tester à copier dans un fichier
+			//random generator : genere des donnï¿½es aleatoirement pour tester ï¿½ copier dans un fichier
 			/*
 			Random rn = new Random();
 			for (int  i=0;i<100;i++) {
@@ -52,7 +52,7 @@ public class DataLoad extends JFrame {
 			*/
 			
 			
-			//on réinintialise la table
+			//on rï¿½inintialise la table
 			myConn.resetTable();
 			
 			//CHargement en base des donnees issues des csv 
@@ -72,7 +72,7 @@ public class DataLoad extends JFrame {
 		    	//On parcourt les sites
 		    	if(site.isDirectory())
 			      {
-		    		System.out.println(site.getName());
+		    		//System.out.println(site.getName());
 		    		String siteName=site.getName();
 		    		DefaultMutableTreeNode node =  new DefaultMutableTreeNode(siteName);
 		    		MainWindow.visites.add(node);

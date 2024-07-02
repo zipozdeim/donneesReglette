@@ -23,7 +23,7 @@ public class csvRead {
 
 					File dirSite  = new File("data\\"+siteName+"\\");
 					File[] listeSites = dirSite.listFiles();
-					System.out.println("Parcours du dossier");
+					//System.out.println("Parcours du dossier");
 					for(File annee : listeSites){
 						//on parcourt les annees
 						if(annee.isDirectory())
@@ -53,28 +53,28 @@ public class csvRead {
 					}
 				} 
 			} else {
-				System.out.println("pas de données à traiter");
+				System.out.println("pas de donnees a traiter");
 			}
 		}
 	}			
 	public static void loadCsv(File csvFile,String site, String dateVisite) throws IOException {
 		FileReader fr = new FileReader(csvFile);  
-		// Créer l'objet BufferedReader        
+		// Crï¿½er l'objet BufferedReader        
 		BufferedReader br = new BufferedReader(fr);  
 		StringBuffer sb = new StringBuffer();    
 		String line;
 		while((line = br.readLine()) != null)
 		{
 			try {
-				System.out.println("LIGNE AVANT : "+line);
+				//System.out.println("LIGNE AVANT : "+line);
 				line=line.replace(';', ',');
-				System.out.println("LIGNE APRES : "+line);
+				//System.out.println("LIGNE APRES : "+line);
 				String[] listeValeurs = line.split(",",-1);
 				String newLine="'"+site+"','"+dateVisite+"'";
 				int i=1;
 				for (String valeur : listeValeurs) {
 
-					System.out.println("valeur "+i+"="+valeur);
+					//System.out.println("valeur "+i+"="+valeur);
 					if (i<=7) {
 						if (valeur.equals("")) {
 							newLine+=",NULL";   
@@ -84,7 +84,7 @@ public class csvRead {
 					}	
 					i++;
 				}
-				System.out.println("Newline : "+newLine);
+				//System.out.println("Newline : "+newLine);
 
 				myConn.InsertNotes(newLine);
 			} catch (SQLException e) {

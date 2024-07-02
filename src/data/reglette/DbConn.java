@@ -28,14 +28,35 @@ public class DbConn {
 		}
 	}
 
-	// UNicité de la connexion
+	// UNicitï¿½ de la connexion
 	public static Connection getInstance() {
 		if (connect == null) {
 			new DbConn();
 		}
 		return connect;
 	}
+	public ResultSet getAllAvgs(String question) throws SQLException {
+		String query="select * from (Select site, dateVisite,round(avg("+question+"),2) as 'moy' from Notes group by site, datevisite order by site,datevisite desc) group by site ;";
+		//String query="Select site, dateVisite,round(avg("+question+"),2) as 'moy' from Notes group by site, datevisite order by site,datevisite desc;";
+		Statement st=connect.createStatement();
+		ResultSet res=st.executeQuery(query);
+		/*while(res.next()) {
+			System.out.println("site: "+res.getString("site")+" visite: "+res.getString("datevisite")+res.getString("moy"));
+		}*/
+		return res;
+	}
 	
+	public ResultSet getCATSAvg(String question) throws SQLException {
+		String query="select round(avg("+question+"),2) as 'moy' from Notes;";
+		//System.out.println(query);
+		//String query="Select site, dateVisite,round(avg("+question+"),2) as 'moy' from Notes group by site, datevisite order by site,datevisite desc;";
+		Statement st=connect.createStatement();
+		ResultSet res=st.executeQuery(query);
+		/*while(res.next()) {
+			System.out.println("site: "+res.getString("site")+" visite: "+res.getString("datevisite")+res.getString("moy"));
+		}*/
+		return res;
+	}	
 
 	
 	public ResultSet getNotesQ(String question, String site, String dateVisite) throws SQLException {
@@ -43,7 +64,7 @@ public class DbConn {
 				+ "count(*) as Nb from Notes "
 				+ "where Reponse is not NULL and site='"+site+"' and dateVisite='"+dateVisite+"' "
 						+ "group By "+question + " order by "+question+";";
-		System.out.println(query);
+		//System.out.println(query);
 		Statement st=connect.createStatement();
 		ResultSet res=st.executeQuery(query);
 		return res;
@@ -52,7 +73,7 @@ public class DbConn {
 	public ResultSet getSumsQ(String question, String site, String dateVisite) throws SQLException {
 		String query="select "+question +",count("+question+"), site,dateVisite from Notes "
 				+ "group by "+question+",site,dateVisite order by dateVisite,"+question+";";
-		System.out.println(query);
+		//System.out.println(query);
 		Statement st=connect.createStatement();
 		ResultSet res=st.executeQuery(query);
 		return res;
@@ -77,7 +98,7 @@ public class DbConn {
 	public void InsertNotes(String contenuFichier) throws SQLException {
 		String query="insert into Notes ('site', 'datevisite', 'Q1','Q2','Q3','Q4','Q5','Q6','Q7') VALUES(";
 		query+=contenuFichier+")";
-		System.out.println("requete insertion : "+query);
+		//System.out.println("requete insertion : "+query);
 		Statement st=connect.createStatement();
 		st.executeUpdate(query);
 		st.close();
